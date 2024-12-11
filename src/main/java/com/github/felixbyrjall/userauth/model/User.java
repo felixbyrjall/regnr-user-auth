@@ -6,6 +6,9 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Getter
 @Setter
@@ -21,11 +24,16 @@ public class User {
 	private String username;
 
 	@NotBlank(message = "Password is required")
-	@Column(nullable = false) // Enforce non-null constraint
+	@Column(nullable = false)
 	private String password;
 
 	@Email(message = "Email must be valid")
-	@NotBlank(message = "Email is required") // Ensure email is not blank
-	@Column(unique = true, nullable = false) // Add uniqueness and non-null constraints
+	@NotBlank(message = "Email is required")
+	@Column(unique = true, nullable = false)
 	private String email;
+
+	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
+	@Column(name = "role")
+	private Set<String> roles = new HashSet<>();
 }
