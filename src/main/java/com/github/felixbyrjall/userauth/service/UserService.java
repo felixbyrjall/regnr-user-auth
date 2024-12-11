@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.Map;
 import java.util.Set;
 
 @Service
@@ -31,7 +32,7 @@ public class UserService {
 		return userRepository.save(user);
 	}
 
-	public String loginUser(String username, String password) {
+	public Map<String, Object> loginUser(String username, String password) {
 		System.out.println("Attempting login for username: " + username);
 
 		User user = userRepository.findByUsername(username)
@@ -49,16 +50,27 @@ public class UserService {
 			throw new RuntimeException("Invalid credentials");
 		}
 
-		return generateToken(user);
+		String token = generateToken(user);
+		return Map.of(
+				"token", token,
+				"username", user.getUsername(),
+				"userId", user.getId().toString()
+		);
 	}
 
 	private String generateToken(User user) {
 		return Jwts.builder()
 				.setSubject(user.getUsername())
 				.claim("roles", user.getRoles())
+				.claim("userId", user.getId())
 				.setIssuedAt(new Date())
 				.setExpiration(new Date(System.currentTimeMillis() + 300000)) // 5 minutes
 				.signWith(secretKey)
 				.compact();
+	}
+
+	public User findUserByUsername(String username) {
+		return userRepository.findByUsername(username)
+				.orElseThrow(() -> new RuntimeException("User not found"));
 	}
 }

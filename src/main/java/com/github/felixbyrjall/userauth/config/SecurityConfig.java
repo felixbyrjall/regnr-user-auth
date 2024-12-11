@@ -78,7 +78,8 @@ public class SecurityConfig {
 				"Authorization",
 				"X-Requested-With",
 				"Accept",
-				"Origin"
+				"Origin",
+				"X-User-Id"
 		));
 		config.setExposedHeaders(Arrays.asList("X-XSRF-TOKEN"));
 		config.setAllowCredentials(true);

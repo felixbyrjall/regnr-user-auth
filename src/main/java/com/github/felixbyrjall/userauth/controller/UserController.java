@@ -22,12 +22,8 @@ public class UserController {
 	public ResponseEntity<?> loginUser(@RequestBody User user) {
 		try {
 			System.out.println("Login request payload: " + user.getUsername());
-			String token = userService.loginUser(user.getUsername(), user.getPassword());
-
-			return ResponseEntity.ok(Map.of(
-					"token", token,
-					"username", user.getUsername()
-			));
+			Map<String, Object> loginResponse = userService.loginUser(user.getUsername(), user.getPassword());
+			return ResponseEntity.ok(loginResponse);
 		} catch (Exception e) {
 			System.err.println("Error during login: " + e.getMessage());
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
