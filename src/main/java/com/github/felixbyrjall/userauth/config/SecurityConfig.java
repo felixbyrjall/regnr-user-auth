@@ -49,7 +49,8 @@ public class SecurityConfig {
 				.csrf(csrf -> csrf
 						.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
 						.ignoringRequestMatchers(
-								"/h2-console-user-auth/**"
+								"/h2-console-user-auth/**",
+								"/actuator/health"
 						)
 				)
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -57,6 +58,7 @@ public class SecurityConfig {
 					auth.requestMatchers("/h2-console-user-auth/**").permitAll();
 					auth.requestMatchers("/api/auth/login", "/api/auth/register", "/api/csrf").permitAll();
 					auth.requestMatchers("/api/admin/**").hasAuthority("ADMIN");
+					auth.requestMatchers("/actuator/health").permitAll();
 					auth.anyRequest().hasAuthority("USER");
 				})
 				.headers(headers -> headers
