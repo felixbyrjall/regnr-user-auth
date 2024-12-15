@@ -45,21 +45,24 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http
-				.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+				//.cors(cors -> cors.configurationSource(corsConfigurationSource()))
 				.csrf(csrf -> csrf
 						.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
 						.ignoringRequestMatchers(
 								"/h2-console-user-auth/**",
-								"/actuator/health"
+								"/actuator/health",
+								"/api/auth/register",
+								"/api/csrf",
+								"/api/test-auth"
 						)
 				)
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(auth -> {
 					auth.requestMatchers("/h2-console-user-auth/**").permitAll();
-					auth.requestMatchers("/api/auth/login", "/api/auth/register", "/api/csrf").permitAll();
+					auth.requestMatchers("/api/auth/login", "/api/auth/register", "/api/csrf", "/api/test-auth").permitAll();
 					auth.requestMatchers("/api/admin/**").hasAuthority("ADMIN");
 					auth.requestMatchers("/actuator/health").permitAll();
-					auth.anyRequest().hasAuthority("USER");
+					auth.anyRequest().authenticated();
 				})
 				.headers(headers -> headers
 						.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)
@@ -72,7 +75,7 @@ public class SecurityConfig {
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration config = new CorsConfiguration();
-		config.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+		config.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:8000"));
 		config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 		config.setAllowedHeaders(Arrays.asList(
 				"Content-Type",
