@@ -29,7 +29,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 
-		if (request.getRequestURI().contains("/actuator/health")) {
+		String requestURI = request.getRequestURI();
+		if (requestURI.contains("/h2-console-user-auth/**") || requestURI.contains("/actuator/health")) {
 			filterChain.doFilter(request, response);
 			return;
 		}
