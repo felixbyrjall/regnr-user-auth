@@ -29,6 +29,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 
+		if (request.getRequestURI().contains("/actuator/health")) {
+			filterChain.doFilter(request, response);
+			return;
+		}
+
 		String authHeader = request.getHeader("Authorization");
 
 		if (authHeader != null && authHeader.startsWith("Bearer ")) {
@@ -38,6 +43,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 				Claims claims = Jwts.parserBuilder()
 						.setSigningKey(secretKey)
+						.setAllowedClockSkewSeconds(5)
 						.build()
 						.parseClaimsJws(token)
 						.getBody();

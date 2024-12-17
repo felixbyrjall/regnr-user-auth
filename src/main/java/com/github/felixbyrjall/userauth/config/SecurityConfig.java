@@ -45,25 +45,25 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http
+				.authorizeHttpRequests(auth -> {
+					auth.requestMatchers("/actuator/**").permitAll();
+					auth.requestMatchers("/h2-console-user-auth/**").permitAll();
+					auth.requestMatchers("/api/auth/login", "/api/auth/register", "/api/csrf", "/api/test-auth").permitAll();
+					auth.requestMatchers("/api/admin/**").hasAuthority("ADMIN");
+					auth.anyRequest().authenticated();
+				})
 				//.cors(cors -> cors.configurationSource(corsConfigurationSource()))
 				.csrf(csrf -> csrf
 						.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
 						.ignoringRequestMatchers(
 								"/h2-console-user-auth/**",
-								"/actuator/health",
+								"/actuator/**",
 								"/api/auth/register",
 								"/api/csrf",
 								"/api/test-auth"
 						)
 				)
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-				.authorizeHttpRequests(auth -> {
-					auth.requestMatchers("/h2-console-user-auth/**").permitAll();
-					auth.requestMatchers("/api/auth/login", "/api/auth/register", "/api/csrf", "/api/test-auth").permitAll();
-					auth.requestMatchers("/api/admin/**").hasAuthority("ADMIN");
-					auth.requestMatchers("/actuator/health").permitAll();
-					auth.anyRequest().authenticated();
-				})
 				.headers(headers -> headers
 						.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)
 				)
