@@ -15,10 +15,10 @@ import java.util.Map;
 public class TestController {
 	@GetMapping("/test-auth")
 	public ResponseEntity<?> testAuth(HttpServletRequest request) {
-		log.error("Test auth endpoint CALLED");
-		log.error("Full Request URI: " + request.getRequestURI());
-		log.error("Full Request URL: " + request.getRequestURL());
-		log.error("Request Method: " + request.getMethod());
+		log.info("Test auth endpoint CALLED");
+		log.info("Full Request URI: " + request.getRequestURI());
+		log.info("Full Request URL: " + request.getRequestURL());
+		log.info("Request Method: " + request.getMethod());
 
 		return ResponseEntity.ok(Map.of("message", "Auth test successful"));
 	}
